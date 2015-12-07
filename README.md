@@ -2,7 +2,7 @@
 LINQ for Kotlin
 
 KLinq implement alike C# LINQ  
-and Lazy Evaluation  
+and Deferred(Lazy) Execution
 そのうちドキュメントは書く(ちゃんと書くとは言っていない)
 
 #### The difference 
