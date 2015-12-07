@@ -1,18 +1,18 @@
-# KLinq
+﻿# KLinq
 LINQ for Kotlin
 
 KLinq implement alike C# LINQ  
-and Lazy Evaluation
+and Lazy Evaluation  
+そのうちドキュメントは書く(ちゃんと書くとは言っていない)
 
 #### The difference 
-
 - this must use [List,Array,Iterable...].toEnumeable()
  + because some function's name conflict stdlib's function
 - **OrDefault function, default is only null
 - average function, generics is extended Number
- + because JVM generics must not allow over road
+ + because JVM generics must not allow overload
 - sum function, generics is extended Number and return Double
- + because JVM generics must not allow over road
+ + because JVM generics must not allow overload
 - defaultIfEmpty function, empty is only null
 - ofType,cast function
  + because i cannot write good code
@@ -28,9 +28,13 @@ and Lazy Evaluation
 		compile 'meilcli:klinq:1.0-SNAPSHOT'
 	}
 
+#### Usage
+	import com.twitter.meil_mitu.klinq.*
+	
+	var linq  = arrayOf(1,2).toEnumerable()
+	linq.where{ x -> x>0}...
 
-ライセンス
-----------
+#### License
 
 This source is The MIT License.
 
