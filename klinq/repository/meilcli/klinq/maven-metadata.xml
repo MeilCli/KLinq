@@ -3,9 +3,11 @@
   <groupId>meilcli</groupId>
   <artifactId>klinq</artifactId>
   <versioning>
+    <release>1.0</release>
     <versions>
       <version>1.0-SNAPSHOT</version>
+      <version>1.0</version>
     </versions>
-    <lastUpdated>20151207083513</lastUpdated>
+    <lastUpdated>20151212062710</lastUpdated>
   </versioning>
 </metadata>

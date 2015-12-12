@@ -2,7 +2,7 @@
 LINQ for Kotlin
 
 KLinq implement alike C# LINQ  
-and Deferred(Lazy) Execution
+and Deferred(Lazy) Execution  
 そのうちドキュメントは書く(ちゃんと書くとは言っていない)
 
 #### The difference 
@@ -25,7 +25,7 @@ and Deferred(Lazy) Execution
 	}
 	
 	dependencies {
-		compile 'meilcli:klinq:1.0-SNAPSHOT'
+		compile 'meilcli:klinq:1.0'
 	}
 
 #### Usage

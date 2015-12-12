@@ -98,4 +98,5 @@ open class Enumerable<T> : IEnumerable<T> {
     override fun getEnumerator(): IEnumerator<T> {
         return enumerator
     }
+
 }
