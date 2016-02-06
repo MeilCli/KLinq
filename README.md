@@ -25,7 +25,7 @@ and Deferred(Lazy) Execution
 	}
 	
 	dependencies {
-		compile 'meilcli:klinq:1.0'
+		compile 'meilcli:klinq:1.1'
 	}
 
 #### Usage
