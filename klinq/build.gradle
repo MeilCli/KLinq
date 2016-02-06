@@ -1,5 +1,5 @@
 group 'meilcli'
-version '1.0'
+version '1.1'
 
 apply plugin: 'java'
 apply plugin: 'kotlin'
@@ -29,7 +29,7 @@ uploadArchives {
 }
 
 buildscript {
-    ext.kotlin_version = '1.0.0-beta-3595'
+    ext.kotlin_version = '1.0.0-rc-1036'
     repositories {
         mavenCentral()
     }
