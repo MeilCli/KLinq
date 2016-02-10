@@ -14,7 +14,7 @@ import java.util.*
 //   because JVM generics must not allow overload
 // - defaultIfEmpty function, empty is only null
 // - ofType,cast function
-//   because i cannot write good code
+//   because extension function
 // - add forEach function
 
 
@@ -886,6 +886,7 @@ fun <TSource> IEnumerable<TSource>.concat(second: IEnumerable<TSource>): IEnumer
 inline fun <reified TSource> IEnumerable<TSource>.defaultIfEmpty(): IEnumerable<TSource?> {
     if (getEnumerator().moveNext()) {
         getEnumerator().reset()
+        // TSource→TSource?
         return this.select { x -> x }
     } else {
         getEnumerator().reset()
@@ -896,6 +897,7 @@ inline fun <reified TSource> IEnumerable<TSource>.defaultIfEmpty(): IEnumerable<
 inline fun <reified TSource> IEnumerable<TSource>.defaultIfEmpty(defaultValue: TSource): IEnumerable<TSource> {
     if (getEnumerator().moveNext()) {
         getEnumerator().reset()
+        // TSource→TSource?
         return this.select { x -> x }
     } else {
         getEnumerator().reset()
@@ -932,7 +934,9 @@ fun <TFirst, TSecond, TResult> IEnumerable<TFirst>.zip(
     return Enumerable<TResult>(newEnumerator)
 }
 
-fun <TSource, TResult> IEnumerable<TSource>.ofType(cl: Class<TResult>): IEnumerable<TResult> {
+//明示する場合型パラメーター二つ必要になる
+//IEnumerableで実装すべきだった恐れ
+inline fun <TSource, reified TResult> IEnumerable<TSource>.ofType(): IEnumerable<TResult> {
     var enumerator: IEnumerator<TSource> = getEnumerator()
     var newEnumerator: IEnumerator<TResult> = object : IEnumerator<TResult> {
         private var _current: TResult? = null
@@ -945,9 +949,11 @@ fun <TSource, TResult> IEnumerable<TSource>.ofType(cl: Class<TResult>): IEnumera
         override fun moveNext(): Boolean {
             while (enumerator.moveNext()) {
                 var item: TSource = enumerator.current
-                if (cl.isAssignableFrom((item as Any).javaClass)) {
-                    _current = item as TResult
+                if (item is TResult) {
+                    _current = item
                     return true
+                } else {
+                    continue
                 }
             }
             return false
@@ -960,7 +966,9 @@ fun <TSource, TResult> IEnumerable<TSource>.ofType(cl: Class<TResult>): IEnumera
     return Enumerable<TResult>(newEnumerator)
 }
 
-fun <TSource, TResult> IEnumerable<TSource>.cast(cl: Class<TResult>): IEnumerable<TResult> {
+//明示する場合型パラメーター二つ必要になる
+//IEnumerableで実装すべきだった恐れ
+inline fun <TSource, reified TResult> IEnumerable<TSource>.cast(): IEnumerable<TResult> {
     var enumerator: IEnumerator<TSource> = getEnumerator()
     var newEnumerator: IEnumerator<TResult> = object : IEnumerator<TResult> {
         private var _current: TResult? = null
@@ -973,8 +981,8 @@ fun <TSource, TResult> IEnumerable<TSource>.cast(cl: Class<TResult>): IEnumerabl
         override fun moveNext(): Boolean {
             if (enumerator.moveNext()) {
                 var item: TSource = enumerator.current
-                if (cl.isAssignableFrom((item as Any).javaClass)) {
-                    _current = item as TResult
+                if (item is TResult) {
+                    _current = item
                     return true
                 } else {
                     throw ClassCastException("cannnot cast")

@@ -242,11 +242,11 @@ class LinqTest {
     }
 
     @Test fun ofType(){
-        assertArrayEquals(arrayOf(b("a") as a,a("b")).toEnumerable().ofType(b::class.java).toArray(),arrayOf(b("a")))
+        assertArrayEquals(arrayOf(b("a") as a,a("b")).toEnumerable().ofType<a,b>().toArray(),arrayOf(b("a")))
     }
 
     @Test fun cast(){
-        assertArrayEquals(arrayOf(b("a") as a).toEnumerable().cast(b::class.java).toArray(),arrayOf(b("a")))
+        assertArrayEquals(arrayOf(b("a") as a).toEnumerable().cast<a,b>().toArray(),arrayOf(b("a")))
     }
 
     @Test fun toLookUp(){

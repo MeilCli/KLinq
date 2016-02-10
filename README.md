@@ -15,7 +15,7 @@ and Deferred(Lazy) Execution
  + because JVM generics must not allow overload
 - defaultIfEmpty function, empty is only null
 - ofType,cast function
- + because i cannot write good code
+ + because extension function
 - add forEach function
 
 #### gradle
@@ -25,7 +25,7 @@ and Deferred(Lazy) Execution
 	}
 	
 	dependencies {
-		compile 'meilcli:klinq:1.1'
+		compile 'meilcli:klinq:1.2'
 	}
 
 #### Usage
