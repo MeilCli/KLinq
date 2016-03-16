@@ -78,13 +78,17 @@ fun <TSource> IEnumerable<TSource>.elementAtOrDefault(index: Int): TSource? {
     return enumerator.current
 }
 
-@JvmOverloads fun <TSource> IEnumerable<TSource>.first(predicate: ((TSource) -> Boolean)? = null): TSource {
+fun <TSource> IEnumerable<TSource>.first() = first(null)
+
+fun <TSource> IEnumerable<TSource>.first(predicate: ((TSource) -> Boolean)?): TSource {
     var result: TSource? = firstOrDefault(predicate)
     if (result == null) throw IllegalArgumentException("not found item")
     return result
 }
 
-@JvmOverloads fun <TSource> IEnumerable<TSource>.firstOrDefault(predicate: ((TSource) -> Boolean)? = null): TSource? {
+fun <TSource> IEnumerable<TSource>.firstOrDefault() = firstOrDefault(null)
+
+fun <TSource> IEnumerable<TSource>.firstOrDefault(predicate: ((TSource) -> Boolean)?): TSource? {
     var enumerator: IEnumerator<TSource> = getEnumerator()
 
     while (enumerator.moveNext()) {
@@ -97,13 +101,17 @@ fun <TSource> IEnumerable<TSource>.elementAtOrDefault(index: Int): TSource? {
     return null
 }
 
-@JvmOverloads fun <TSource> IEnumerable<TSource>.last(predicate: ((TSource) -> Boolean)? = null): TSource {
+fun <TSource> IEnumerable<TSource>.last() = last(null)
+
+fun <TSource> IEnumerable<TSource>.last(predicate: ((TSource) -> Boolean)?): TSource {
     var result: TSource? = lastOrDefault(predicate)
     if (result == null) throw IllegalArgumentException("not found item")
     return result
 }
 
-@JvmOverloads fun <TSource> IEnumerable<TSource>.lastOrDefault(predicate: ((TSource) -> Boolean)? = null): TSource? {
+fun <TSource> IEnumerable<TSource>.lastOrDefault() = lastOrDefault(null)
+
+fun <TSource> IEnumerable<TSource>.lastOrDefault(predicate: ((TSource) -> Boolean)?): TSource? {
     var enumerator: IEnumerator<TSource> = getEnumerator()
 
     var item: TSource? = null
@@ -116,13 +124,17 @@ fun <TSource> IEnumerable<TSource>.elementAtOrDefault(index: Int): TSource? {
     return item
 }
 
-@JvmOverloads fun <TSource> IEnumerable<TSource>.single(predicate: ((TSource) -> Boolean)? = null): TSource {
+fun <TSource> IEnumerable<TSource>.single() = single(null)
+
+fun <TSource> IEnumerable<TSource>.single(predicate: ((TSource) -> Boolean)?): TSource {
     var result: TSource? = singleOrDefault(predicate)
     if (result == null) throw IllegalArgumentException("not found item")
     return result
 }
 
-@JvmOverloads fun <TSource> IEnumerable<TSource>.singleOrDefault(predicate: ((TSource) -> Boolean)? = null): TSource? {
+fun <TSource> IEnumerable<TSource>.singleOrDefault() = singleOrDefault(null)
+
+fun <TSource> IEnumerable<TSource>.singleOrDefault(predicate: ((TSource) -> Boolean)?): TSource? {
     var enumerator: IEnumerator<TSource> = getEnumerator()
 
     var item: TSource? = null
@@ -173,7 +185,9 @@ fun <TSource> IEnumerable<TSource>.where(predicate: (TSource, Int) -> Boolean): 
     return Enumerable<TSource>(newEnumerator)
 }
 
-@JvmOverloads fun <TSource> IEnumerable<TSource>.distinct(comparer: IEqualityComparer<TSource> = EqualityComparer<TSource>()): IEnumerable<TSource> {
+fun <TSource> IEnumerable<TSource>.distinct() = distinct(EqualityComparer<TSource>())
+
+fun <TSource> IEnumerable<TSource>.distinct(comparer: IEqualityComparer<TSource>): IEnumerable<TSource> {
     var enumerator: IEnumerator<TSource> = getEnumerator()
     var newEnumerator: IEnumerator<TSource> = object : IEnumerator<TSource> {
         private var list = ArrayList<TSource>()
@@ -344,7 +358,9 @@ fun <TSource> IEnumerable<TSource>.sum(selector: (TSource) -> Number): Double {
     return sum
 }
 
-@JvmOverloads fun <TSource> IEnumerable<TSource>.count(predicate: ((TSource) -> Boolean)? = null): Int {
+fun <TSource> IEnumerable<TSource>.count() = count(null)
+
+fun <TSource> IEnumerable<TSource>.count(predicate: ((TSource) -> Boolean)?): Int {
     var enumerator: IEnumerator<TSource> = getEnumerator()
     var count: Int = 0
     while (enumerator.moveNext()) {
@@ -399,7 +415,9 @@ fun <TSource> IEnumerable<TSource>.all(predicate: (TSource) -> Boolean): Boolean
     return true
 }
 
-@JvmOverloads fun <TSource> IEnumerable<TSource>.any(predicate: ((TSource) -> Boolean)? = null): Boolean {
+fun <TSource> IEnumerable<TSource>.any() = any(null)
+
+fun <TSource> IEnumerable<TSource>.any(predicate: ((TSource) -> Boolean)?): Boolean {
     var enumerator: IEnumerator<TSource> = getEnumerator()
 
     while (enumerator.moveNext()) {
@@ -412,15 +430,15 @@ fun <TSource> IEnumerable<TSource>.all(predicate: (TSource) -> Boolean): Boolean
     return false
 }
 
-@JvmOverloads fun <TSource> IEnumerable<TSource>.contains(
-        value: TSource,
-        comparer: IEqualityComparer<TSource> = EqualityComparer<TSource>()): Boolean {
+fun <TSource> IEnumerable<TSource>.contains(value: TSource) = contains(value, EqualityComparer<TSource>())
+
+fun <TSource> IEnumerable<TSource>.contains(value: TSource, comparer: IEqualityComparer<TSource>): Boolean {
     return any { x -> comparer.equals(x, value) }
 }
 
-@JvmOverloads fun <TSource> IEnumerable<TSource>.sequenceEqual(
-        second: IEnumerable<TSource>,
-        comparer: IEqualityComparer<TSource> = EqualityComparer<TSource>()): Boolean {
+fun <TSource> IEnumerable<TSource>.sequenceEqual(second: IEnumerable<TSource>) = sequenceEqual(second, EqualityComparer<TSource>())
+
+fun <TSource> IEnumerable<TSource>.sequenceEqual(second: IEnumerable<TSource>, comparer: IEqualityComparer<TSource>): Boolean {
     var firstEnumerator: IEnumerator<TSource> = getEnumerator()
     var secondEnumerator: IEnumerator<TSource> = second.getEnumerator()
     while (firstEnumerator.moveNext()) {
@@ -445,9 +463,9 @@ fun <TSource> IEnumerable<TSource>.all(predicate: (TSource) -> Boolean): Boolean
     return true
 }
 
-@JvmOverloads fun <TSource> IEnumerable<TSource>.union(
-        second: IEnumerable<TSource>,
-        comparer: IEqualityComparer<TSource> = EqualityComparer<TSource>()): IEnumerable<TSource> {
+fun <TSource> IEnumerable<TSource>.union(second: IEnumerable<TSource>) = union(second, EqualityComparer<TSource>())
+
+fun <TSource> IEnumerable<TSource>.union(second: IEnumerable<TSource>, comparer: IEqualityComparer<TSource>): IEnumerable<TSource> {
     var enumerator: IEnumerator<TSource> = getEnumerator()
     var secondEnumerator: IEnumerator<TSource> = second.getEnumerator()
     var newEnumerator: IEnumerator<TSource> = object : IEnumerator<TSource> {
@@ -490,9 +508,9 @@ fun <TSource> IEnumerable<TSource>.all(predicate: (TSource) -> Boolean): Boolean
     return Enumerable<TSource>(newEnumerator)
 }
 
-@JvmOverloads fun <TSource> IEnumerable<TSource>.except(
-        second: IEnumerable<TSource>,
-        comparer: IEqualityComparer<TSource> = EqualityComparer<TSource>()): IEnumerable<TSource> {
+fun <TSource> IEnumerable<TSource>.except(second: IEnumerable<TSource>) = except(second, EqualityComparer<TSource>())
+
+fun <TSource> IEnumerable<TSource>.except(second: IEnumerable<TSource>, comparer: IEqualityComparer<TSource>): IEnumerable<TSource> {
     var enumerator: IEnumerator<TSource> = getEnumerator()
     var newEnumerator: IEnumerator<TSource> = object : IEnumerator<TSource> {
         private var list = ArrayList<TSource>()
@@ -524,9 +542,9 @@ fun <TSource> IEnumerable<TSource>.all(predicate: (TSource) -> Boolean): Boolean
     return Enumerable<TSource>(newEnumerator)
 }
 
-@JvmOverloads fun <TSource> IEnumerable<TSource>.intersect(
-        second: IEnumerable<TSource>,
-        comparer: IEqualityComparer<TSource> = EqualityComparer<TSource>()): IEnumerable<TSource> {
+fun <TSource> IEnumerable<TSource>.intersect(second: IEnumerable<TSource>) = intersect(second, EqualityComparer<TSource>())
+
+fun <TSource> IEnumerable<TSource>.intersect(second: IEnumerable<TSource>, comparer: IEqualityComparer<TSource>): IEnumerable<TSource> {
     var enumerator: IEnumerator<TSource> = getEnumerator()
     var newEnumerator: IEnumerator<TSource> = object : IEnumerator<TSource> {
         private var list = ArrayList<TSource>()
@@ -720,16 +738,17 @@ fun <TSource, TCollection, TResult> IEnumerable<TSource>.selectMany(
 }
 
 //キャッシュするならIEnumeratorから実装しなければ…
-@JvmOverloads fun <TSource, TKey> IEnumerable<TSource>.groupBy(
-        keySelector: (TSource) -> TKey,
-        comparer: IEqualityComparer<TKey> = EqualityComparer<TKey>()): IEnumerable<IGrouping<TKey, TSource>> {
+fun <TSource, TKey> IEnumerable<TSource>.groupBy(keySelector: (TSource) -> TKey) = groupBy(keySelector, EqualityComparer<TKey>())
+
+fun <TSource, TKey> IEnumerable<TSource>.groupBy(keySelector: (TSource) -> TKey, comparer: IEqualityComparer<TKey>): IEnumerable<IGrouping<TKey, TSource>> {
     return groupBy(keySelector, { x -> x }, comparer)
 }
 
-@JvmOverloads fun <TSource, TKey, TElement> IEnumerable<TSource>.groupBy(
-        keySelector: (TSource) -> TKey,
-        elementSelector: (TSource) -> TElement,
-        comparer: IEqualityComparer<TKey> = EqualityComparer<TKey>()): IEnumerable<IGrouping<TKey, TElement>> {
+fun <TSource, TKey, TElement> IEnumerable<TSource>.groupBy(keySelector: (TSource) -> TKey, elementSelector: (TSource) -> TElement)
+        = groupBy(keySelector, elementSelector, EqualityComparer<TKey>())
+
+fun <TSource, TKey, TElement> IEnumerable<TSource>.groupBy(keySelector: (TSource) -> TKey, elementSelector: (TSource) -> TElement, comparer: IEqualityComparer<TKey>)
+        : IEnumerable<IGrouping<TKey, TElement>> {
     var source: IEnumerable<TSource> = this
     return object : IEnumerable<IGrouping<TKey, TElement>> {
         override fun getEnumerator(): IEnumerator<IGrouping<TKey, TElement>> {
@@ -738,18 +757,21 @@ fun <TSource, TCollection, TResult> IEnumerable<TSource>.selectMany(
     }
 }
 
-@JvmOverloads fun <TSource, TKey, TResult> IEnumerable<TSource>.groupBy(
-        keySelector: (TSource) -> TKey,
-        resultSelector: (TKey, TSource) -> TResult,
-        comparer: IEqualityComparer<TKey> = EqualityComparer<TKey>()): IEnumerable<TResult> {
+fun <TSource, TKey, TResult> IEnumerable<TSource>.groupBy(keySelector: (TSource) -> TKey, resultSelector: (TKey, TSource) -> TResult)
+        = groupBy(keySelector, resultSelector, EqualityComparer<TKey>())
+
+fun <TSource, TKey, TResult> IEnumerable<TSource>.groupBy(keySelector: (TSource) -> TKey, resultSelector: (TKey, TSource) -> TResult, comparer: IEqualityComparer<TKey>)
+        : IEnumerable<TResult> {
     return groupBy(keySelector, { x -> x }, resultSelector, comparer)
 }
 
-@JvmOverloads fun <TSource, TKey, TElement, TResult> IEnumerable<TSource>.groupBy(
-        keySelector: (TSource) -> TKey,
-        elementSelector: (TSource) -> TElement,
-        resultSelector: (TKey, TElement) -> TResult,
-        comparer: IEqualityComparer<TKey> = EqualityComparer<TKey>()): IEnumerable<TResult> {
+fun <TSource, TKey, TElement, TResult> IEnumerable<TSource>.groupBy(
+        keySelector: (TSource) -> TKey, elementSelector: (TSource) -> TElement, resultSelector: (TKey, TElement) -> TResult)
+        = groupBy(keySelector, elementSelector, resultSelector, EqualityComparer<TKey>())
+
+fun <TSource, TKey, TElement, TResult> IEnumerable<TSource>.groupBy(
+        keySelector: (TSource) -> TKey, elementSelector: (TSource) -> TElement, resultSelector: (TKey, TElement) -> TResult, comparer: IEqualityComparer<TKey>):
+        IEnumerable<TResult> {
     var source: IEnumerable<TSource> = this
     return object : IEnumerable<TResult> {
         override fun getEnumerator(): IEnumerator<TResult> {
@@ -770,12 +792,13 @@ fun <TSource, TCollection, TResult> IEnumerable<TSource>.selectMany(
     }
 }
 
-@JvmOverloads fun <TOuter, TInner, TKey, TResult> IEnumerable<TOuter>.join(
-        inner: IEnumerable<TInner>,
-        outerKeySelector: (TOuter) -> TKey,
-        innerKeySelector: (TInner) -> TKey,
-        resultSelector: (TOuter, TInner) -> TResult,
-        comparer: IEqualityComparer<TKey> = EqualityComparer<TKey>()): IEnumerable<TResult> {
+fun <TOuter, TInner, TKey, TResult> IEnumerable<TOuter>.join(
+        inner: IEnumerable<TInner>, outerKeySelector: (TOuter) -> TKey, innerKeySelector: (TInner) -> TKey, resultSelector: (TOuter, TInner) -> TResult)
+        = join(inner, outerKeySelector, innerKeySelector, resultSelector, EqualityComparer<TKey>())
+
+fun <TOuter, TInner, TKey, TResult> IEnumerable<TOuter>.join(
+        inner: IEnumerable<TInner>, outerKeySelector: (TOuter) -> TKey, innerKeySelector: (TInner) -> TKey, resultSelector: (TOuter, TInner) -> TResult, comparer: IEqualityComparer<TKey>)
+        : IEnumerable<TResult> {
     var enumerator: IEnumerator<TOuter> = getEnumerator()
     var innnerEnumerator: IEnumerator<TInner> = inner.getEnumerator()
     var newEnumerator: IEnumerator<TResult> = object : IEnumerator<TResult> {
@@ -821,12 +844,13 @@ fun <TSource, TCollection, TResult> IEnumerable<TSource>.selectMany(
     return Enumerable<TResult>(newEnumerator)
 }
 
-@JvmOverloads fun <TOuter, TInner, TKey, TResult> IEnumerable<TOuter>.groupJoin(
-        inner: IEnumerable<TInner>,
-        outerKeySelector: (TOuter) -> TKey,
-        innerKeySelector: (TInner) -> TKey,
-        resultSelector: (TOuter, IEnumerable<TInner>) -> TResult,
-        comparer: IEqualityComparer<TKey> = EqualityComparer<TKey>()): IEnumerable<TResult> {
+fun <TOuter, TInner, TKey, TResult> IEnumerable<TOuter>.groupJoin(
+        inner: IEnumerable<TInner>, outerKeySelector: (TOuter) -> TKey, innerKeySelector: (TInner) -> TKey, resultSelector: (TOuter, IEnumerable<TInner>) -> TResult)
+        = groupJoin(inner, outerKeySelector, innerKeySelector, resultSelector, EqualityComparer<TKey>())
+
+fun <TOuter, TInner, TKey, TResult> IEnumerable<TOuter>.groupJoin(
+        inner: IEnumerable<TInner>, outerKeySelector: (TOuter) -> TKey, innerKeySelector: (TInner) -> TKey, resultSelector: (TOuter, IEnumerable<TInner>) -> TResult, comparer: IEqualityComparer<TKey>)
+        : IEnumerable<TResult> {
     var enumerator: IEnumerator<TOuter> = getEnumerator()
     var newEnumerator: IEnumerator<TResult> = object : IEnumerator<TResult> {
         private var _current: TResult? = null
@@ -1014,10 +1038,11 @@ fun <TSource, TKey> IEnumerable<TSource>.toDictionary(
     return toDictionary(keySelector, { x -> x }, comparer)
 }
 
-@JvmOverloads fun <TSource, TKey, TElement> IEnumerable<TSource>.toDictionary(
-        keySelector: (TSource) -> TKey,
-        elementSelector: (TSource) -> TElement,
-        comparer: IEqualityComparer<TKey> = EqualityComparer<TKey>()): Map<TKey, TElement> {
+fun <TSource, TKey, TElement> IEnumerable<TSource>.toDictionary(keySelector: (TSource) -> TKey, elementSelector: (TSource) -> TElement)
+        = toDictionary(keySelector, elementSelector, EqualityComparer<TKey>())
+
+fun <TSource, TKey, TElement> IEnumerable<TSource>.toDictionary(keySelector: (TSource) -> TKey, elementSelector: (TSource) -> TElement, comparer: IEqualityComparer<TKey>)
+        : Map<TKey, TElement> {
     var map = HashMap<TKey, TElement>()
     var enumerator: IEnumerator<TSource> = getEnumerator()
     while (enumerator.moveNext()) {
@@ -1037,16 +1062,17 @@ inline fun<reified TSource> IEnumerable<TSource>.toArray(): Array<TSource> {
     return Array(list.size, { i -> list[i] })
 }
 
-@JvmOverloads fun <TSource, TKey> IEnumerable<TSource>.toLookup(
-        keySelector: (TSource) -> TKey,
-        comparer: IEqualityComparer<TKey> = EqualityComparer<TKey>()): ILookup<TKey, TSource> {
+fun <TSource, TKey> IEnumerable<TSource>.toLookup(keySelector: (TSource) -> TKey) = toLookup(keySelector, EqualityComparer<TKey>())
+
+fun <TSource, TKey> IEnumerable<TSource>.toLookup(keySelector: (TSource) -> TKey, comparer: IEqualityComparer<TKey>): ILookup<TKey, TSource> {
     return Lookup<TSource, TKey, TSource>(this, keySelector, { x -> x }, comparer)
 }
 
-@JvmOverloads fun <TSource, TKey, TElement> IEnumerable<TSource>.toLookup(
-        keySelector: (TSource) -> TKey,
-        elementSelector: (TSource) -> TElement,
-        comparer: IEqualityComparer<TKey> = EqualityComparer<TKey>()): ILookup<TKey, TElement> {
+fun <TSource, TKey, TElement> IEnumerable<TSource>.toLookup(keySelector: (TSource) -> TKey, elementSelector: (TSource) -> TElement)
+        = toLookup(keySelector, elementSelector, EqualityComparer<TKey>())
+
+fun <TSource, TKey, TElement> IEnumerable<TSource>.toLookup(
+        keySelector: (TSource) -> TKey, elementSelector: (TSource) -> TElement, comparer: IEqualityComparer<TKey>): ILookup<TKey, TElement> {
     return Lookup<TSource, TKey, TElement>(this, keySelector, elementSelector, comparer)
 }
 
