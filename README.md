@@ -19,13 +19,8 @@ and Deferred(Lazy) Execution
 - add forEach function
 
 #### gradle
-	repositories {
-	    mavenCentral()
-	    maven { url "https://raw.github.com/MeilCli/KLinq/master/klinq/repository" }
-	}
-	
 	dependencies {
-		compile 'meilcli:klinq:1.2'
+		compile 'net.meilcli:klinq:1.3'
 	}
 
 #### Usage
@@ -38,6 +33,4 @@ and Deferred(Lazy) Execution
 
 This source is The MIT License.
 
-using [The Kotlin Standard Library][Kotlin_stdlib] [Apache License, Version 2.0][Apache]
-[Apache]: http://www.apache.org/licenses/LICENSE-2.0
-[Kotlin_stdlib]: https://github.com/JetBrains/kotlin/tree/master/libraries/stdlib
+using [The Kotlin Standard Library](https://github.com/JetBrains/kotlin/tree/master/libraries/stdlib) : [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0)
