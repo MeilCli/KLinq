@@ -1,7 +1,8 @@
-package com.twitter.meil_mitu.klinq
+package net.meilcli.klinq
 
-import org.junit.*
-import org.junit.Assert.*
+import org.junit.Assert.assertArrayEquals
+import org.junit.Assert.assertEquals
+import org.junit.Test
 
 class LinqTest {
 
@@ -235,18 +236,18 @@ class LinqTest {
         }
     }
 
-    class b(name:String):a(name){
+    class b(name: String) : a(name) {
         fun a():String{
             return name
         }
     }
 
     @Test fun ofType(){
-        assertArrayEquals(arrayOf(b("a") as a,a("b")).toEnumerable().ofType<a,b>().toArray(),arrayOf(b("a")))
+        assertArrayEquals(arrayOf(b("a") as a, a("b")).toEnumerable().ofType<a, b>().toArray(), arrayOf(b("a")))
     }
 
     @Test fun cast(){
-        assertArrayEquals(arrayOf(b("a") as a).toEnumerable().cast<a,b>().toArray(),arrayOf(b("a")))
+        assertArrayEquals(arrayOf(b("a") as a).toEnumerable().cast<a, b>().toArray(), arrayOf(b("a")))
     }
 
     @Test fun toLookUp(){

@@ -41,8 +41,8 @@ def desc = 'LINQ for Kotlin'
 
 def bintray_group = 'net.meilcli'
 def bintray_artifact = 'klinq'
-def bintray_ver = '1.3'
-def bintray_ver_desc = 'first bintray upload'
+def bintray_ver = '1.4'
+def bintray_ver_desc = 'change package'
 
 group = bintray_group
 version = bintray_ver

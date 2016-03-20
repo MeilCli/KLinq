@@ -20,11 +20,11 @@ and Deferred(Lazy) Execution
 
 #### gradle
 	dependencies {
-		compile 'net.meilcli:klinq:1.3'
+		compile 'net.meilcli:klinq:1.4'
 	}
 
 #### Usage
-	import com.twitter.meil_mitu.klinq.*
+	import net.meilcli.klinq.*
 	
 	var linq  = arrayOf(1,2).toEnumerable()
 	linq.where{ x -> x>0}...

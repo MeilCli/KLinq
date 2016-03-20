@@ -1,4 +1,4 @@
-package com.twitter.meil_mitu.klinq
+package net.meilcli.klinq
 
 interface IGrouping<TKey, TElement> : IEnumerable<TElement> {
 
