@@ -1,5 +1,6 @@
 package net.meilcli.klinq
 
+import net.meilcli.klinq.internal.*
 import java.util.*
 
 // function orderBy http://d.hatena.ne.jp/chiheisen/20111031/1320068429
@@ -155,69 +156,13 @@ fun <TSource> IEnumerable<TSource>.where(predicate: (TSource) -> Boolean): IEnum
     return where { t, i -> predicate(t) }
 }
 
-fun <TSource> IEnumerable<TSource>.where(predicate: (TSource, Int) -> Boolean): IEnumerable<TSource> {
-    var enumerator: IEnumerator<TSource> = getEnumerator()
-    var newEnumerator: IEnumerator<TSource> = object : IEnumerator<TSource> {
-        private var index: Int = -1
-        private var _current: TSource? = null
-        override var current: TSource
-            get() = _current!!
-            set(value) {
-                _current = value
-            }
-
-        override fun moveNext(): Boolean {
-            while (enumerator.moveNext()) {
-                index++
-                if (predicate(enumerator.current, index)) {
-                    _current = enumerator.current
-                    return true
-                }
-            }
-            return false
-        }
-
-        override fun reset() {
-            index = -1
-            enumerator.reset()
-        }
-    }
-    return Enumerable<TSource>(newEnumerator)
-}
+fun <TSource> IEnumerable<TSource>.where(predicate: (TSource, Int) -> Boolean): IEnumerable<TSource>
+        = Enumerable(WhereEnumerator(getEnumerator(), predicate))
 
 fun <TSource> IEnumerable<TSource>.distinct() = distinct(EqualityComparer<TSource>())
 
-fun <TSource> IEnumerable<TSource>.distinct(comparer: IEqualityComparer<TSource>): IEnumerable<TSource> {
-    var enumerator: IEnumerator<TSource> = getEnumerator()
-    var newEnumerator: IEnumerator<TSource> = object : IEnumerator<TSource> {
-        private var list = ArrayList<TSource>()
-        private var _current: TSource? = null
-        override var current: TSource
-            get() = _current!!
-            set(value) {
-                _current = value
-            }
-
-        override fun moveNext(): Boolean {
-            while (enumerator.moveNext()) {
-                var item: TSource = enumerator.current
-                if (list.toEnumerable().contains(item, comparer)) {
-                    continue
-                }
-                _current = item
-                list.add(item)
-                return true
-            }
-            return false
-        }
-
-        override fun reset() {
-            list.clear()
-            enumerator.reset()
-        }
-    }
-    return Enumerable<TSource>(newEnumerator)
-}
+fun <TSource> IEnumerable<TSource>.distinct(comparer: IEqualityComparer<TSource>): IEnumerable<TSource>
+        = Enumerable(DistinctEnumerator(getEnumerator(), comparer))
 
 fun <TSource> IEnumerable<TSource>.skip(count: Int): IEnumerable<TSource> {
     return skipWhile { t, i -> i < count }
@@ -227,32 +172,8 @@ fun <TSource> IEnumerable<TSource>.skipWhile(predicate: (TSource) -> Boolean): I
     return skipWhile { t, i -> predicate(t) }
 }
 
-fun <TSource> IEnumerable<TSource>.skipWhile(predicate: (TSource, Int) -> Boolean): IEnumerable<TSource> {
-    var enumerator: IEnumerator<TSource> = getEnumerator()
-    var newEnumerator: IEnumerator<TSource> = object : IEnumerator<TSource> {
-        private var index: Int = 0
-        override var current: TSource
-            get() = enumerator.current
-            set(value) {
-                enumerator.current = value
-            }
-
-        override fun moveNext(): Boolean {
-            var result: Boolean = enumerator.moveNext()
-            while (result && predicate(enumerator.current, index)) {
-                index++
-                result = enumerator.moveNext()
-            }
-            return result
-        }
-
-        override fun reset() {
-            index = 0
-            enumerator.reset()
-        }
-    }
-    return Enumerable<TSource>(newEnumerator)
-}
+fun <TSource> IEnumerable<TSource>.skipWhile(predicate: (TSource, Int) -> Boolean): IEnumerable<TSource>
+        = Enumerable(SkipWhileEnumerator(getEnumerator(), predicate))
 
 fun <TSource> IEnumerable<TSource>.take(count: Int): IEnumerable<TSource> {
     return takeWhile { t, i -> i < count }
@@ -262,33 +183,8 @@ fun <TSource> IEnumerable<TSource>.takeWhile(predicate: (TSource) -> Boolean): I
     return takeWhile { t, i -> predicate(t) }
 }
 
-fun <TSource> IEnumerable<TSource>.takeWhile(predicate: (TSource, Int) -> Boolean): IEnumerable<TSource> {
-    var enumerator: IEnumerator<TSource> = getEnumerator()
-    var newEnumerator: IEnumerator<TSource> = object : IEnumerator<TSource> {
-        private var index: Int = 0
-        override var current: TSource
-            get() = enumerator.current
-            set(value) {
-                enumerator.current = value
-            }
-
-        override fun moveNext(): Boolean {
-            var result: Boolean = enumerator.moveNext()
-            if (result && predicate(enumerator.current, index)) {
-                index++
-            } else {
-                result = false
-            }
-            return result
-        }
-
-        override fun reset() {
-            index = 0
-            enumerator.reset()
-        }
-    }
-    return Enumerable<TSource>(newEnumerator)
-}
+fun <TSource> IEnumerable<TSource>.takeWhile(predicate: (TSource, Int) -> Boolean): IEnumerable<TSource>
+        = Enumerable(TakeWhileEnumerator(getEnumerator(), predicate))
 
 fun <TSource : Comparable<TSource>> IEnumerable<TSource>.max(): TSource {
     return max { x -> x }
@@ -465,116 +361,18 @@ fun <TSource> IEnumerable<TSource>.sequenceEqual(second: IEnumerable<TSource>, c
 
 fun <TSource> IEnumerable<TSource>.union(second: IEnumerable<TSource>) = union(second, EqualityComparer<TSource>())
 
-fun <TSource> IEnumerable<TSource>.union(second: IEnumerable<TSource>, comparer: IEqualityComparer<TSource>): IEnumerable<TSource> {
-    var enumerator: IEnumerator<TSource> = getEnumerator()
-    var secondEnumerator: IEnumerator<TSource> = second.getEnumerator()
-    var newEnumerator: IEnumerator<TSource> = object : IEnumerator<TSource> {
-        private var list = ArrayList<TSource>()
-        private var _current: TSource? = null
-        override var current: TSource
-            get() = _current!!
-            set(value) {
-                _current = value
-            }
-
-        override fun moveNext(): Boolean {
-            while (enumerator.moveNext()) {
-                var item: TSource = enumerator.current
-                if (list.toEnumerable().contains(item, comparer)) {
-                    continue
-                }
-                _current = item
-                list.add(item)
-                return true
-            }
-            while (secondEnumerator.moveNext()) {
-                var item: TSource = secondEnumerator.current
-                if (list.toEnumerable().contains(item, comparer)) {
-                    continue
-                }
-                _current = item
-                list.add(item)
-                return true
-            }
-            return false
-        }
-
-        override fun reset() {
-            list.clear()
-            enumerator.reset()
-            secondEnumerator.reset()
-        }
-    }
-    return Enumerable<TSource>(newEnumerator)
-}
+fun <TSource> IEnumerable<TSource>.union(second: IEnumerable<TSource>, comparer: IEqualityComparer<TSource>): IEnumerable<TSource>
+        = Enumerable(UnionEnumerator(getEnumerator(), second.getEnumerator(), comparer))
 
 fun <TSource> IEnumerable<TSource>.except(second: IEnumerable<TSource>) = except(second, EqualityComparer<TSource>())
 
-fun <TSource> IEnumerable<TSource>.except(second: IEnumerable<TSource>, comparer: IEqualityComparer<TSource>): IEnumerable<TSource> {
-    var enumerator: IEnumerator<TSource> = getEnumerator()
-    var newEnumerator: IEnumerator<TSource> = object : IEnumerator<TSource> {
-        private var list = ArrayList<TSource>()
-        private var _current: TSource? = null
-        override var current: TSource
-            get() = _current!!
-            set(value) {
-                _current = value
-            }
-
-        override fun moveNext(): Boolean {
-            while (enumerator.moveNext()) {
-                var item: TSource = enumerator.current
-                if (list.toEnumerable().contains(item, comparer) || second.contains(item, comparer)) {
-                    continue
-                }
-                _current = item
-                list.add(item)
-                return true
-            }
-            return false
-        }
-
-        override fun reset() {
-            list.clear()
-            enumerator.reset()
-        }
-    }
-    return Enumerable<TSource>(newEnumerator)
-}
+fun <TSource> IEnumerable<TSource>.except(second: IEnumerable<TSource>, comparer: IEqualityComparer<TSource>): IEnumerable<TSource>
+        = Enumerable(ExceptEnumerator(getEnumerator(), second, comparer))
 
 fun <TSource> IEnumerable<TSource>.intersect(second: IEnumerable<TSource>) = intersect(second, EqualityComparer<TSource>())
 
-fun <TSource> IEnumerable<TSource>.intersect(second: IEnumerable<TSource>, comparer: IEqualityComparer<TSource>): IEnumerable<TSource> {
-    var enumerator: IEnumerator<TSource> = getEnumerator()
-    var newEnumerator: IEnumerator<TSource> = object : IEnumerator<TSource> {
-        private var list = ArrayList<TSource>()
-        private var _current: TSource? = null
-        override var current: TSource
-            get() = _current!!
-            set(value) {
-                _current = value
-            }
-
-        override fun moveNext(): Boolean {
-            while (enumerator.moveNext()) {
-                var item: TSource = enumerator.current
-                if (list.toEnumerable().contains(item, comparer) || second.contains(item, comparer) == false) {
-                    continue
-                }
-                _current = item
-                list.add(item)
-                return true
-            }
-            return false
-        }
-
-        override fun reset() {
-            list.clear()
-            enumerator.reset()
-        }
-    }
-    return Enumerable<TSource>(newEnumerator)
-}
+fun <TSource> IEnumerable<TSource>.intersect(second: IEnumerable<TSource>, comparer: IEqualityComparer<TSource>): IEnumerable<TSource>
+        = Enumerable(IntersectEnumerator(getEnumerator(), second, comparer))
 
 fun <TSource, TKey : Comparable<TKey>> IEnumerable<TSource>.orderBy(
         keySelector: (TSource) -> TKey): IOrderedEnumerable<TSource> {
@@ -648,33 +446,8 @@ fun <TSource, TResult> IEnumerable<TSource>.select(selector: (TSource) -> TResul
     return select { t, i -> selector(t) }
 }
 
-fun <TSource, TResult> IEnumerable<TSource>.select(selector: (TSource, Int) -> TResult): IEnumerable<TResult> {
-    var enumerator: IEnumerator<TSource> = getEnumerator()
-    var newEnumerator: IEnumerator<TResult> = object : IEnumerator<TResult> {
-        private var index: Int = 0
-        private var _current: TResult? = null
-        override var current: TResult
-            get() = _current!!
-            set(value) {
-                _current = value
-            }
-
-        override fun moveNext(): Boolean {
-            var result: Boolean = enumerator.moveNext()
-            if (result == true) {
-                _current = selector(enumerator.current, index)
-                index++
-            }
-            return result;
-        }
-
-        override fun reset() {
-            index = 0
-            enumerator.reset()
-        }
-    }
-    return Enumerable<TResult>(newEnumerator)
-}
+fun <TSource, TResult> IEnumerable<TSource>.select(selector: (TSource, Int) -> TResult): IEnumerable<TResult>
+        = Enumerable(SelectEnumerator(getEnumerator(), selector))
 
 fun <TSource, TResult> IEnumerable<TSource>.selectMany(
         selector: (TSource) -> IEnumerable<TResult>): IEnumerable<TResult> {
@@ -693,49 +466,8 @@ fun <TSource, TCollection, TResult> IEnumerable<TSource>.selectMany(
 }
 
 fun <TSource, TCollection, TResult> IEnumerable<TSource>.selectMany(
-        collectionSelector: (TSource, Int) -> IEnumerable<TCollection>,
-        resultSelector: (TSource, TCollection) -> TResult): IEnumerable<TResult> {
-    var enumerator: IEnumerator<TSource> = getEnumerator()
-    var newEnumerator: IEnumerator<TResult> = object : IEnumerator<TResult> {
-        private var index: Int = 0
-        private var select: TSource? = null
-        private var collection: IEnumerable<TCollection>? = null
-        private var _current: TResult? = null
-        override var current: TResult
-            get() = _current!!
-            set(value) {
-                _current = value
-            }
-
-        override fun moveNext(): Boolean {
-            if (collection != null) {
-                if (collection!!.getEnumerator().moveNext()) {
-                    _current = resultSelector(select!!, collection!!.getEnumerator().current)
-                    return true
-                } else {
-                    collection = null
-                }
-            }
-            while (enumerator.moveNext()) {
-                collection = collectionSelector(enumerator.current, index)
-                select = enumerator.current
-                index++
-                if (collection!!.getEnumerator().moveNext()) {
-                    _current = resultSelector(select!!, collection!!.getEnumerator().current)
-                    return true
-                }
-            }
-            return false
-        }
-
-        override fun reset() {
-            index = 0
-            collection = null
-            enumerator.reset()
-        }
-    }
-    return Enumerable<TResult>(newEnumerator)
-}
+        collectionSelector: (TSource, Int) -> IEnumerable<TCollection>, resultSelector: (TSource, TCollection) -> TResult): IEnumerable<TResult>
+        = Enumerable(SelectManyEnumerator(getEnumerator(), collectionSelector, resultSelector))
 
 //キャッシュするならIEnumeratorから実装しなければ…
 fun <TSource, TKey> IEnumerable<TSource>.groupBy(keySelector: (TSource) -> TKey) = groupBy(keySelector, EqualityComparer<TKey>())
@@ -798,51 +530,8 @@ fun <TOuter, TInner, TKey, TResult> IEnumerable<TOuter>.join(
 
 fun <TOuter, TInner, TKey, TResult> IEnumerable<TOuter>.join(
         inner: IEnumerable<TInner>, outerKeySelector: (TOuter) -> TKey, innerKeySelector: (TInner) -> TKey, resultSelector: (TOuter, TInner) -> TResult, comparer: IEqualityComparer<TKey>)
-        : IEnumerable<TResult> {
-    var enumerator: IEnumerator<TOuter> = getEnumerator()
-    var innnerEnumerator: IEnumerator<TInner> = inner.getEnumerator()
-    var newEnumerator: IEnumerator<TResult> = object : IEnumerator<TResult> {
-        private var isContinue: Boolean = false
-        private var _current: TResult? = null
-        override var current: TResult
-            get() = _current!!
-            set(value) {
-                _current = value
-            }
-
-        override fun moveNext(): Boolean {
-            if (isContinue) {
-                var key: TKey = outerKeySelector(enumerator.current)
-                while (innnerEnumerator.moveNext()) {
-                    if (comparer.equals(key, innerKeySelector(innnerEnumerator.current))) {
-                        _current = resultSelector(enumerator.current, innnerEnumerator.current)
-                        return true
-                    }
-                }
-                innnerEnumerator.reset()
-                isContinue = false
-            }
-            while (enumerator.moveNext()) {
-                var key: TKey = outerKeySelector(enumerator.current)
-                while (innnerEnumerator.moveNext()) {
-                    if (comparer.equals(key, innerKeySelector(innnerEnumerator.current))) {
-                        _current = resultSelector(enumerator.current, innnerEnumerator.current)
-                        isContinue = true
-                        return true
-                    }
-                }
-                innnerEnumerator.reset()
-            }
-            return false
-        }
-
-        override fun reset() {
-            isContinue = false
-            enumerator.reset()
-        }
-    }
-    return Enumerable<TResult>(newEnumerator)
-}
+        : IEnumerable<TResult>
+        = Enumerable<TResult>(JoinEnumerator(getEnumerator(), inner.getEnumerator(), outerKeySelector, innerKeySelector, resultSelector, comparer))
 
 fun <TOuter, TInner, TKey, TResult> IEnumerable<TOuter>.groupJoin(
         inner: IEnumerable<TInner>, outerKeySelector: (TOuter) -> TKey, innerKeySelector: (TInner) -> TKey, resultSelector: (TOuter, IEnumerable<TInner>) -> TResult)
@@ -850,62 +539,11 @@ fun <TOuter, TInner, TKey, TResult> IEnumerable<TOuter>.groupJoin(
 
 fun <TOuter, TInner, TKey, TResult> IEnumerable<TOuter>.groupJoin(
         inner: IEnumerable<TInner>, outerKeySelector: (TOuter) -> TKey, innerKeySelector: (TInner) -> TKey, resultSelector: (TOuter, IEnumerable<TInner>) -> TResult, comparer: IEqualityComparer<TKey>)
-        : IEnumerable<TResult> {
-    var enumerator: IEnumerator<TOuter> = getEnumerator()
-    var newEnumerator: IEnumerator<TResult> = object : IEnumerator<TResult> {
-        private var _current: TResult? = null
-        override var current: TResult
-            get() = _current!!
-            set(value) {
-                _current = value
-            }
+        : IEnumerable<TResult>
+        = Enumerable(GroupJoinEnumerator(getEnumerator(), inner, outerKeySelector, innerKeySelector, resultSelector, comparer))
 
-        override fun moveNext(): Boolean {
-            var result: Boolean = enumerator.moveNext()
-            if (result) {
-                var key: TKey = outerKeySelector(enumerator.current)
-                _current = resultSelector(enumerator.current, inner.where { x -> comparer.equals(innerKeySelector(x), key) })
-            }
-            return result
-        }
-
-        override fun reset() {
-            enumerator.reset()
-        }
-    }
-    return Enumerable<TResult>(newEnumerator)
-}
-
-fun <TSource> IEnumerable<TSource>.concat(second: IEnumerable<TSource>): IEnumerable<TSource> {
-    var enumerator: IEnumerator<TSource> = getEnumerator()
-    var secondEnumerator: IEnumerator<TSource> = second.getEnumerator()
-    var newEnumerator: IEnumerator<TSource> = object : IEnumerator<TSource> {
-        private var _current: TSource? = null
-        override var current: TSource
-            get() = _current!!
-            set(value) {
-                _current = value
-            }
-
-        override fun moveNext(): Boolean {
-            while (enumerator.moveNext()) {
-                _current = enumerator.current
-                return true
-            }
-            while (secondEnumerator.moveNext()) {
-                _current = secondEnumerator.current
-                return true
-            }
-            return false
-        }
-
-        override fun reset() {
-            enumerator.reset()
-            secondEnumerator.reset()
-        }
-    }
-    return Enumerable<TSource>(newEnumerator)
-}
+fun <TSource> IEnumerable<TSource>.concat(second: IEnumerable<TSource>): IEnumerable<TSource>
+        = Enumerable(ConcatEnumerator(getEnumerator(), second.getEnumerator()))
 
 inline fun <reified TSource> IEnumerable<TSource>.defaultIfEmpty(): IEnumerable<TSource?> {
     if (getEnumerator().moveNext()) {
@@ -929,98 +567,16 @@ inline fun <reified TSource> IEnumerable<TSource>.defaultIfEmpty(defaultValue: T
     }
 }
 
-fun <TFirst, TSecond, TResult> IEnumerable<TFirst>.zip(
-        second: IEnumerable<TSecond>,
-        resultSelector: (TFirst, TSecond) -> TResult): IEnumerable<TResult> {
-    var firstEnumerator: IEnumerator<TFirst> = getEnumerator()
-    var secondEnumerator: IEnumerator<TSecond> = second.getEnumerator()
-    var newEnumerator: IEnumerator<TResult> = object : IEnumerator<TResult> {
-        private var _current: TResult? = null
-        override var current: TResult
-            get() = _current!!
-            set(value) {
-                _current = value
-            }
-
-        override fun moveNext(): Boolean {
-            while (firstEnumerator.moveNext() && secondEnumerator.moveNext()) {
-                _current = resultSelector(firstEnumerator.current, secondEnumerator.current)
-                return true
-            }
-            return false
-        }
-
-        override fun reset() {
-            firstEnumerator.reset()
-            secondEnumerator.reset()
-        }
-    }
-    return Enumerable<TResult>(newEnumerator)
-}
+fun <TFirst, TSecond, TResult> IEnumerable<TFirst>.zip(second: IEnumerable<TSecond>, resultSelector: (TFirst, TSecond) -> TResult): IEnumerable<TResult>
+        = Enumerable(ZipEnumerator(getEnumerator(), second.getEnumerator(), resultSelector))
 
 //明示する場合型パラメーター二つ必要になる
 //IEnumerableで実装すべきだった恐れ
-inline fun <TSource, reified TResult> IEnumerable<TSource>.ofType(): IEnumerable<TResult> {
-    var enumerator: IEnumerator<TSource> = getEnumerator()
-    var newEnumerator: IEnumerator<TResult> = object : IEnumerator<TResult> {
-        private var _current: TResult? = null
-        override var current: TResult
-            get() = _current!!
-            set(value) {
-                _current = value
-            }
-
-        override fun moveNext(): Boolean {
-            while (enumerator.moveNext()) {
-                var item: TSource = enumerator.current
-                if (item is TResult) {
-                    _current = item
-                    return true
-                } else {
-                    continue
-                }
-            }
-            return false
-        }
-
-        override fun reset() {
-            enumerator.reset()
-        }
-    }
-    return Enumerable<TResult>(newEnumerator)
-}
+inline fun <TSource, reified TResult> IEnumerable<TSource>.ofType(): IEnumerable<TResult> = _ofType()
 
 //明示する場合型パラメーター二つ必要になる
 //IEnumerableで実装すべきだった恐れ
-inline fun <TSource, reified TResult> IEnumerable<TSource>.cast(): IEnumerable<TResult> {
-    var enumerator: IEnumerator<TSource> = getEnumerator()
-    var newEnumerator: IEnumerator<TResult> = object : IEnumerator<TResult> {
-        private var _current: TResult? = null
-        override var current: TResult
-            get() = _current!!
-            set(value) {
-                _current = value
-            }
-
-        override fun moveNext(): Boolean {
-            if (enumerator.moveNext()) {
-                var item: TSource = enumerator.current
-                if (item is TResult) {
-                    _current = item
-                    return true
-                } else {
-                    throw ClassCastException("cannnot cast")
-                }
-            }
-            return false
-        }
-
-        override fun reset() {
-            enumerator.reset()
-        }
-    }
-    return Enumerable<TResult>(newEnumerator)
-}
+inline fun <TSource, reified TResult> IEnumerable<TSource>.cast(): IEnumerable<TResult> = _cast()
 
 fun <TSource> IEnumerable<TSource>.toList(): List<TSource> {
     var list = ArrayList<TSource>()
