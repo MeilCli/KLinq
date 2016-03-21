@@ -327,50 +327,26 @@ fun <TSource> IEnumerable<TSource>.intersect(second: IEnumerable<TSource>) = int
 fun <TSource> IEnumerable<TSource>.intersect(second: IEnumerable<TSource>, comparer: IEqualityComparer<TSource>): IEnumerable<TSource>
         = Enumerable(IntersectEnumerator(getEnumerator(), second, comparer))
 
-fun <TSource, TKey : Comparable<TKey>> IEnumerable<TSource>.orderBy(keySelector: (TSource) -> TKey): IOrderedEnumerable<TSource> {
-    var comparator = object : Comparator<TKey> {
-        override fun compare(o1: TKey, o2: TKey): Int {
-            return o1.compareTo(o2)
-        }
-    }
-    return OrderedEnumerable<TSource, TKey>(this, keySelector, comparator, false)
-}
+fun <TSource, TKey : Comparable<TKey>> IEnumerable<TSource>.orderBy(keySelector: (TSource) -> TKey): IOrderedEnumerable<TSource>
+        = OrderedEnumerable<TSource, TKey>(this, keySelector, WrapComparator(), false)
 
 fun <TSource, TKey> IEnumerable<TSource>.orderBy(keySelector: (TSource) -> TKey, comparator: Comparator<TKey>): IOrderedEnumerable<TSource>
         = OrderedEnumerable<TSource, TKey>(this, keySelector, comparator, false)
 
-fun <TSource, TKey : Comparable<TKey>> IEnumerable<TSource>.orderByDescending(keySelector: (TSource) -> TKey): IOrderedEnumerable<TSource> {
-    var comparator = object : Comparator<TKey> {
-        override fun compare(o1: TKey, o2: TKey): Int {
-            return o1.compareTo(o2)
-        }
-    }
-    return OrderedEnumerable<TSource, TKey>(this, keySelector, comparator, true)
-}
+fun <TSource, TKey : Comparable<TKey>> IEnumerable<TSource>.orderByDescending(keySelector: (TSource) -> TKey): IOrderedEnumerable<TSource>
+        = OrderedEnumerable<TSource, TKey>(this, keySelector, WrapComparator(), true)
 
 fun <TSource, TKey> IEnumerable<TSource>.orderByDescending(keySelector: (TSource) -> TKey, comparator: Comparator<TKey>): IOrderedEnumerable<TSource>
         = OrderedEnumerable<TSource, TKey>(this, keySelector, comparator, true)
 
-fun<TSource, TKey : Comparable<TKey>> IOrderedEnumerable<TSource>.thenBy(keySelector: (TSource) -> TKey): IOrderedEnumerable<TSource> {
-    var comparator = object : Comparator<TKey> {
-        override fun compare(o1: TKey, o2: TKey): Int {
-            return o1.compareTo(o2)
-        }
-    }
-    return createOrderedEnumerable(keySelector, comparator, false)
-}
+fun<TSource, TKey : Comparable<TKey>> IOrderedEnumerable<TSource>.thenBy(keySelector: (TSource) -> TKey): IOrderedEnumerable<TSource>
+        = createOrderedEnumerable(keySelector, WrapComparator(), false)
 
 fun <TSource, TKey> IOrderedEnumerable<TSource>.thenBy(keySelector: (TSource) -> TKey, comparator: Comparator<TKey>): IOrderedEnumerable<TSource>
         = createOrderedEnumerable(keySelector, comparator, false)
 
-fun <TSource, TKey : Comparable<TKey>> IOrderedEnumerable<TSource>.thenByDescending(keySelector: (TSource) -> TKey): IOrderedEnumerable<TSource> {
-    var comparator = object : Comparator<TKey> {
-        override fun compare(o1: TKey, o2: TKey): Int {
-            return o1.compareTo(o2)
-        }
-    }
-    return createOrderedEnumerable(keySelector, comparator, true)
-}
+fun <TSource, TKey : Comparable<TKey>> IOrderedEnumerable<TSource>.thenByDescending(keySelector: (TSource) -> TKey): IOrderedEnumerable<TSource>
+        = createOrderedEnumerable(keySelector, WrapComparator(), true)
 
 fun <TSource, TKey> IOrderedEnumerable<TSource>.thenByDescending(keySelector: (TSource) -> TKey, comparator: Comparator<TKey>): IOrderedEnumerable<TSource>
         = createOrderedEnumerable(keySelector, comparator, true)
