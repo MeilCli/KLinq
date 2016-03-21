@@ -1,4 +1,6 @@
-package net.meilcli.klinq
+package net.meilcli.klinq.internal
+
+import net.meilcli.klinq.IGrouping
 
 class Grouping<TKey, TElement> : Enumerable<TElement>, IGrouping<TKey, TElement> {
 

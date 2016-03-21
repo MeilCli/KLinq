@@ -1,5 +1,6 @@
-package net.meilcli.klinq
+package net.meilcli.klinq.internal
 
+import net.meilcli.klinq.*
 import java.util.*
 
 class Lookup<TSource, TKey, TElement> : ILookup<TKey, TElement> {

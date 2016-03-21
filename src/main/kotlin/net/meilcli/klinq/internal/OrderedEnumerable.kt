@@ -1,5 +1,9 @@
-package net.meilcli.klinq
+package net.meilcli.klinq.internal
 
+import net.meilcli.klinq.IEnumerable
+import net.meilcli.klinq.IEnumerator
+import net.meilcli.klinq.IOrderedEnumerable
+import net.meilcli.klinq.toList
 import java.util.*
 
 class OrderedEnumerable<T, TKey> : IOrderedEnumerable<T> {

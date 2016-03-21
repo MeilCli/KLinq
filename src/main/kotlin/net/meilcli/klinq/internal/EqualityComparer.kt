@@ -1,4 +1,6 @@
-package net.meilcli.klinq
+package net.meilcli.klinq.internal
+
+import net.meilcli.klinq.IEqualityComparer
 
 class EqualityComparer<T> : IEqualityComparer<T> {
 

@@ -1,5 +1,6 @@
 package net.meilcli.klinq
 
+import net.meilcli.klinq.internal.Enumerable
 import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
 import org.junit.Test

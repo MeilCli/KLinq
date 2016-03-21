@@ -1,4 +1,7 @@
-package net.meilcli.klinq
+package net.meilcli.klinq.internal
+
+import net.meilcli.klinq.IEnumerable
+import net.meilcli.klinq.IEnumerator
 
 open class Enumerable<T> : IEnumerable<T> {
 
