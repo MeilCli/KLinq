@@ -378,14 +378,8 @@ fun <TSource, TKey, TElement> IEnumerable<TSource>.groupBy(keySelector: (TSource
         = groupBy(keySelector, elementSelector, EqualityComparer<TKey>())
 
 fun <TSource, TKey, TElement> IEnumerable<TSource>.groupBy(keySelector: (TSource) -> TKey, elementSelector: (TSource) -> TElement, comparer: IEqualityComparer<TKey>)
-        : IEnumerable<IGrouping<TKey, TElement>> {
-    var source: IEnumerable<TSource> = this
-    return object : IEnumerable<IGrouping<TKey, TElement>> {
-        override fun getEnumerator(): IEnumerator<IGrouping<TKey, TElement>> {
-            return Lookup<TSource, TKey, TElement>(source, keySelector, elementSelector, comparer).getEnumerator()
-        }
-    }
-}
+        : IEnumerable<IGrouping<TKey, TElement>>
+        = GroupByEnumerable(this, keySelector, elementSelector, comparer)
 
 fun <TSource, TKey, TResult> IEnumerable<TSource>.groupBy(keySelector: (TSource) -> TKey, resultSelector: (TKey, TSource) -> TResult)
         = groupBy(keySelector, resultSelector, EqualityComparer<TKey>())
@@ -399,26 +393,8 @@ fun <TSource, TKey, TElement, TResult> IEnumerable<TSource>.groupBy(
 
 fun <TSource, TKey, TElement, TResult> IEnumerable<TSource>.groupBy(
         keySelector: (TSource) -> TKey, elementSelector: (TSource) -> TElement, resultSelector: (TKey, TElement) -> TResult, comparer: IEqualityComparer<TKey>):
-        IEnumerable<TResult> {
-    var source: IEnumerable<TSource> = this
-    return object : IEnumerable<TResult> {
-        override fun getEnumerator(): IEnumerator<TResult> {
-            var enumerator: IEnumerator<IGrouping<TKey, TElement>>
-                    = Lookup<TSource, TKey, TElement>(source, keySelector, elementSelector, comparer).getEnumerator()
-            var result = ArrayList<TResult>()
-            while (enumerator.moveNext()) {
-                var group: IGrouping<TKey, TElement> = enumerator.current
-                var groupEnumerator: IEnumerator<TElement> = group.getEnumerator()
-                while (groupEnumerator.moveNext()) {
-                    result.add(resultSelector(group.key, groupEnumerator.current))
-                }
-                groupEnumerator.reset()
-            }
-            enumerator.reset()
-            return Enumerable<TResult>(result).getEnumerator()
-        }
-    }
-}
+        IEnumerable<TResult>
+        = GroupByEnumerable2(this, keySelector, elementSelector, resultSelector, comparer)
 
 fun <TOuter, TInner, TKey, TResult> IEnumerable<TOuter>.join(
         inner: IEnumerable<TInner>, outerKeySelector: (TOuter) -> TKey, innerKeySelector: (TInner) -> TKey, resultSelector: (TOuter, TInner) -> TResult)
