@@ -39,98 +39,33 @@ fun FloatArray.toEnumerable(): IEnumerable<Float> = Enumerable({ iterator() })
 
 fun DoubleArray.toEnumerable(): IEnumerable<Double> = Enumerable({ iterator() })
 
-fun <TSource> IEnumerable<TSource>.elementAt(index: Int): TSource {
-    var result: TSource? = elementAtOrDefault(index)
-    if (result == null) throw IllegalArgumentException("index is out of range")
-    return result
-}
+fun <TSource> IEnumerable<TSource>.elementAt(index: Int): TSource = _elementAt(index)
 
-fun <TSource> IEnumerable<TSource>.elementAtOrDefault(index: Int): TSource? {
-    if (index < 0) return null
-    var enumerator: IEnumerator<TSource> = getEnumerator()
-
-    for (i in 0..index) {
-        if (enumerator.moveNext() == false) {
-            enumerator.reset()
-            return null
-        }
-    }
-    enumerator.reset()
-    return enumerator.current
-}
+fun <TSource> IEnumerable<TSource>.elementAtOrDefault(index: Int): TSource? = _elementAtOrDefault(index)
 
 fun <TSource> IEnumerable<TSource>.first() = first(null)
 
-fun <TSource> IEnumerable<TSource>.first(predicate: ((TSource) -> Boolean)?): TSource {
-    var result: TSource? = firstOrDefault(predicate)
-    if (result == null) throw IllegalArgumentException("not found item")
-    return result
-}
+fun <TSource> IEnumerable<TSource>.first(predicate: ((TSource) -> Boolean)?): TSource = _first(predicate)
 
 fun <TSource> IEnumerable<TSource>.firstOrDefault() = firstOrDefault(null)
 
-fun <TSource> IEnumerable<TSource>.firstOrDefault(predicate: ((TSource) -> Boolean)?): TSource? {
-    var enumerator: IEnumerator<TSource> = getEnumerator()
-
-    while (enumerator.moveNext()) {
-        if (predicate == null || predicate(enumerator.current)) {
-            enumerator.reset()
-            return enumerator.current
-        }
-    }
-    enumerator.reset()
-    return null
-}
+fun <TSource> IEnumerable<TSource>.firstOrDefault(predicate: ((TSource) -> Boolean)?): TSource? = _firstOrDefault(predicate)
 
 fun <TSource> IEnumerable<TSource>.last() = last(null)
 
-fun <TSource> IEnumerable<TSource>.last(predicate: ((TSource) -> Boolean)?): TSource {
-    var result: TSource? = lastOrDefault(predicate)
-    if (result == null) throw IllegalArgumentException("not found item")
-    return result
-}
+fun <TSource> IEnumerable<TSource>.last(predicate: ((TSource) -> Boolean)?): TSource = _last(predicate)
 
 fun <TSource> IEnumerable<TSource>.lastOrDefault() = lastOrDefault(null)
 
-fun <TSource> IEnumerable<TSource>.lastOrDefault(predicate: ((TSource) -> Boolean)?): TSource? {
-    var enumerator: IEnumerator<TSource> = getEnumerator()
-
-    var item: TSource? = null
-    while (enumerator.moveNext()) {
-        if (predicate == null || predicate(enumerator.current)) {
-            item = enumerator.current
-        }
-    }
-    enumerator.reset()
-    return item
-}
+fun <TSource> IEnumerable<TSource>.lastOrDefault(predicate: ((TSource) -> Boolean)?): TSource? = _lastOrDefault(predicate)
 
 fun <TSource> IEnumerable<TSource>.single() = single(null)
 
-fun <TSource> IEnumerable<TSource>.single(predicate: ((TSource) -> Boolean)?): TSource {
-    var result: TSource? = singleOrDefault(predicate)
-    if (result == null) throw IllegalArgumentException("not found item")
-    return result
-}
+fun <TSource> IEnumerable<TSource>.single(predicate: ((TSource) -> Boolean)?): TSource = _single(predicate)
 
 fun <TSource> IEnumerable<TSource>.singleOrDefault() = singleOrDefault(null)
 
-fun <TSource> IEnumerable<TSource>.singleOrDefault(predicate: ((TSource) -> Boolean)?): TSource? {
-    var enumerator: IEnumerator<TSource> = getEnumerator()
-
-    var item: TSource? = null
-    while (enumerator.moveNext()) {
-        if (predicate == null || predicate(enumerator.current)) {
-            if (item != null) {
-                enumerator.reset()
-                return null
-            }
-            item = enumerator.current
-        }
-    }
-    enumerator.reset()
-    return item
-}
+fun <TSource> IEnumerable<TSource>.singleOrDefault(predicate: ((TSource) -> Boolean)?): TSource? = _singleOrDefault(predicate)
 
 fun <TSource> IEnumerable<TSource>.where(predicate: (TSource) -> Boolean) = where { t, i -> predicate(t) }
 
@@ -158,128 +93,36 @@ fun <TSource> IEnumerable<TSource>.takeWhile(predicate: (TSource, Int) -> Boolea
 
 fun <TSource : Comparable<TSource>> IEnumerable<TSource>.max() = max { x -> x }
 
-fun <TSource, TResult : Comparable<TResult>> IEnumerable<TSource>.max(selector: (TSource) -> TResult): TResult {
-    var enumerator: IEnumerator<TSource> = getEnumerator()
-    if (enumerator.moveNext() == false) {
-        enumerator.reset()
-        throw IllegalArgumentException("size is 0")
-    }
-    var seed: TSource = enumerator.current
-    enumerator.reset()
-    return aggregate(selector(seed), { x, y ->
-        var second: TResult = selector(y);
-        if (second.compareTo(x) > 0) second else x
-    })
-}
+fun <TSource, TResult : Comparable<TResult>> IEnumerable<TSource>.max(selector: (TSource) -> TResult): TResult = _max(selector)
 
 fun <TSource : Comparable<TSource>> IEnumerable<TSource>.min() = min { x -> x }
 
-fun <TSource, TResult : Comparable<TResult>> IEnumerable<TSource>.min(selector: (TSource) -> TResult): TResult {
-    var enumerator: IEnumerator<TSource> = getEnumerator()
-    if (enumerator.moveNext() == false) {
-        enumerator.reset()
-        throw IllegalArgumentException("size is 0")
-    }
-    var seed: TSource = enumerator.current
-    enumerator.reset()
-    return aggregate(selector(seed), { x, y ->
-        var second: TResult = selector(y);
-        if (second.compareTo(x) < 0) second else x
-    })
-}
+fun <TSource, TResult : Comparable<TResult>> IEnumerable<TSource>.min(selector: (TSource) -> TResult): TResult = _min(selector)
 
 fun <TSource : Number> IEnumerable<TSource>.average() = average { x -> x }
 
-fun <TSource> IEnumerable<TSource>.average(selector: (TSource) -> Number): Double {
-    var enumerator: IEnumerator<TSource> = getEnumerator()
-    if (enumerator.moveNext() == false) throw IllegalArgumentException("size is 0")
-    var sum: Double = selector(enumerator.current).toDouble()
-    var count: Int = 1
-    while (enumerator.moveNext()) {
-        sum += (selector(enumerator.current).toDouble())
-        count++
-    }
-    enumerator.reset()
-    return sum / count
-}
+fun <TSource> IEnumerable<TSource>.average(selector: (TSource) -> Number): Double = _average(selector)
 
 fun <TSource : Number> IEnumerable<TSource>.sum() = sum { x -> x }
 
-fun <TSource> IEnumerable<TSource>.sum(selector: (TSource) -> Number): Double {
-    var enumerator: IEnumerator<TSource> = getEnumerator()
-    if (enumerator.moveNext() == false) throw IllegalArgumentException("size is 0")
-    var sum: Double = selector(enumerator.current).toDouble()
-    while (enumerator.moveNext()) {
-        sum += (selector(enumerator.current).toDouble())
-    }
-    enumerator.reset()
-    return sum
-}
+fun <TSource> IEnumerable<TSource>.sum(selector: (TSource) -> Number): Double = _sum(selector)
 
 fun <TSource> IEnumerable<TSource>.count() = count(null)
 
-fun <TSource> IEnumerable<TSource>.count(predicate: ((TSource) -> Boolean)?): Int {
-    var enumerator: IEnumerator<TSource> = getEnumerator()
-    var count: Int = 0
-    while (enumerator.moveNext()) {
-        if (predicate == null || predicate(enumerator.current)) {
-            count++
-        }
-    }
-    enumerator.reset()
-    return count
-}
+fun <TSource> IEnumerable<TSource>.count(predicate: ((TSource) -> Boolean)?): Int = _count(predicate)
 
-fun <TSource> IEnumerable<TSource>.aggregate(func: (TSource, TSource) -> TSource): TSource {
-    var enumerator: IEnumerator<TSource> = getEnumerator()
-    if (enumerator.moveNext() == false) {
-        enumerator.reset()
-        throw IllegalArgumentException("size is 0")
-    }
-    var seed: TSource = enumerator.current
-    enumerator.reset()
-    return aggregate(seed, func, { x -> x })
-}
+fun <TSource> IEnumerable<TSource>.aggregate(func: (TSource, TSource) -> TSource): TSource = _aggregate(func)
 
 fun <TSource, TAccumulate> IEnumerable<TSource>.aggregate(seed: TAccumulate, func: (TAccumulate, TSource) -> TAccumulate): TAccumulate = aggregate(seed, func, { x -> x })
 
-fun <TSource, TAccumulate, TResult> IEnumerable<TSource>.aggregate(seed: TAccumulate, func: (TAccumulate, TSource) -> TAccumulate, resultSelector: (TAccumulate) -> TResult): TResult {
-    var enumerator: IEnumerator<TSource> = getEnumerator()
-    var select: TAccumulate = seed
-    while (enumerator.moveNext()) {
-        select = func(select, enumerator.current)
-    }
-    enumerator.reset()
-    return resultSelector(select)
-}
+fun <TSource, TAccumulate, TResult> IEnumerable<TSource>.aggregate(seed: TAccumulate, func: (TAccumulate, TSource) -> TAccumulate, resultSelector: (TAccumulate) -> TResult): TResult
+        = _aggregate(seed, func, resultSelector)
 
-fun <TSource> IEnumerable<TSource>.all(predicate: (TSource) -> Boolean): Boolean {
-    var enumerator: IEnumerator<TSource> = getEnumerator()
-
-    while (enumerator.moveNext()) {
-        if (predicate(enumerator.current) == false) {
-            enumerator.reset()
-            return false
-        }
-    }
-    enumerator.reset()
-    return true
-}
+fun <TSource> IEnumerable<TSource>.all(predicate: (TSource) -> Boolean): Boolean = _all(predicate)
 
 fun <TSource> IEnumerable<TSource>.any() = any(null)
 
-fun <TSource> IEnumerable<TSource>.any(predicate: ((TSource) -> Boolean)?): Boolean {
-    var enumerator: IEnumerator<TSource> = getEnumerator()
-
-    while (enumerator.moveNext()) {
-        if (predicate == null || predicate(enumerator.current)) {
-            enumerator.reset()
-            return true
-        }
-    }
-    enumerator.reset()
-    return false
-}
+fun <TSource> IEnumerable<TSource>.any(predicate: ((TSource) -> Boolean)?): Boolean = _any(predicate)
 
 fun <TSource> IEnumerable<TSource>.contains(value: TSource) = contains(value, EqualityComparer<TSource>())
 
@@ -287,30 +130,7 @@ fun <TSource> IEnumerable<TSource>.contains(value: TSource, comparer: IEqualityC
 
 fun <TSource> IEnumerable<TSource>.sequenceEqual(second: IEnumerable<TSource>) = sequenceEqual(second, EqualityComparer<TSource>())
 
-fun <TSource> IEnumerable<TSource>.sequenceEqual(second: IEnumerable<TSource>, comparer: IEqualityComparer<TSource>): Boolean {
-    var firstEnumerator: IEnumerator<TSource> = getEnumerator()
-    var secondEnumerator: IEnumerator<TSource> = second.getEnumerator()
-    while (firstEnumerator.moveNext()) {
-        if (secondEnumerator.moveNext() == false) {
-            firstEnumerator.reset()
-            secondEnumerator.reset()
-            return false
-        }
-        if ((comparer.equals(firstEnumerator.current, secondEnumerator.current)) == false) {
-            firstEnumerator.reset()
-            secondEnumerator.reset()
-            return false
-        }
-    }
-    if (secondEnumerator.moveNext()) {
-        firstEnumerator.reset()
-        secondEnumerator.reset()
-        return false
-    }
-    firstEnumerator.reset()
-    secondEnumerator.reset()
-    return true
-}
+fun <TSource> IEnumerable<TSource>.sequenceEqual(second: IEnumerable<TSource>, comparer: IEqualityComparer<TSource>): Boolean = _sequenceEqual(second, comparer)
 
 fun <TSource> IEnumerable<TSource>.union(second: IEnumerable<TSource>) = union(second, EqualityComparer<TSource>())
 
@@ -417,27 +237,9 @@ fun <TOuter, TInner, TKey, TResult> IEnumerable<TOuter>.groupJoin(
 fun <TSource> IEnumerable<TSource>.concat(second: IEnumerable<TSource>): IEnumerable<TSource>
         = Enumerable(ConcatEnumerator(getEnumerator(), second.getEnumerator()))
 
-inline fun <reified TSource> IEnumerable<TSource>.defaultIfEmpty(): IEnumerable<TSource?> {
-    if (getEnumerator().moveNext()) {
-        getEnumerator().reset()
-        // TSource→TSource?
-        return this.select { x -> x }
-    } else {
-        getEnumerator().reset()
-        return arrayOfNulls<TSource>(1).toEnumerable()
-    }
-}
+inline fun <reified TSource> IEnumerable<TSource>.defaultIfEmpty(): IEnumerable<TSource?> = _defaultIfEmpty()
 
-inline fun <reified TSource> IEnumerable<TSource>.defaultIfEmpty(defaultValue: TSource): IEnumerable<TSource> {
-    if (getEnumerator().moveNext()) {
-        getEnumerator().reset()
-        // TSource→TSource?
-        return this.select { x -> x }
-    } else {
-        getEnumerator().reset()
-        return arrayOf(defaultValue).toEnumerable()
-    }
-}
+inline fun <reified TSource> IEnumerable<TSource>.defaultIfEmpty(defaultValue: TSource): IEnumerable<TSource> = _defaultIfEmpty(defaultValue)
 
 fun <TFirst, TSecond, TResult> IEnumerable<TFirst>.zip(second: IEnumerable<TSecond>, resultSelector: (TFirst, TSecond) -> TResult): IEnumerable<TResult>
         = Enumerable(ZipEnumerator(getEnumerator(), second.getEnumerator(), resultSelector))
@@ -450,15 +252,7 @@ inline fun <TSource, reified TResult> IEnumerable<TSource>.ofType(): IEnumerable
 //IEnumerableで実装すべきだった恐れ
 inline fun <TSource, reified TResult> IEnumerable<TSource>.cast(): IEnumerable<TResult> = _cast()
 
-fun <TSource> IEnumerable<TSource>.toList(): List<TSource> {
-    var list = ArrayList<TSource>()
-    var enumerator: IEnumerator<TSource> = getEnumerator()
-    while (enumerator.moveNext()) {
-        list.add(enumerator.current)
-    }
-    enumerator.reset()
-    return list
-}
+fun <TSource> IEnumerable<TSource>.toList(): List<TSource> = _toList()
 
 fun <TSource, TKey> IEnumerable<TSource>.toDictionary(keySelector: (TSource) -> TKey) = toDictionary(keySelector, EqualityComparer<TKey>())
 
@@ -469,25 +263,10 @@ fun <TSource, TKey, TElement> IEnumerable<TSource>.toDictionary(keySelector: (TS
         = toDictionary(keySelector, elementSelector, EqualityComparer<TKey>())
 
 fun <TSource, TKey, TElement> IEnumerable<TSource>.toDictionary(keySelector: (TSource) -> TKey, elementSelector: (TSource) -> TElement, comparer: IEqualityComparer<TKey>)
-        : Map<TKey, TElement> {
-    var map = HashMap<TKey, TElement>()
-    var enumerator: IEnumerator<TSource> = getEnumerator()
-    while (enumerator.moveNext()) {
-        var key: TKey = keySelector(enumerator.current)
-        if (map.keys.toEnumerable().contains(key, comparer) == false) {
-            map.put(key, elementSelector(enumerator.current))
-        } else {
-            throw IllegalArgumentException("duplicate keys")
-        }
-    }
-    enumerator.reset()
-    return map
-}
+        : Map<TKey, TElement>
+        = _toDictionary(keySelector, elementSelector, comparer)
 
-inline fun<reified TSource> IEnumerable<TSource>.toArray(): Array<TSource> {
-    var list: List<TSource> = toList()
-    return Array(list.size, { i -> list[i] })
-}
+inline fun<reified TSource> IEnumerable<TSource>.toArray(): Array<TSource> = _toArray()
 
 fun <TSource, TKey> IEnumerable<TSource>.toLookup(keySelector: (TSource) -> TKey) = toLookup(keySelector, EqualityComparer<TKey>())
 
@@ -505,13 +284,5 @@ fun <TSource> IEnumerable<TSource>.asEnumerable(): IEnumerable<TSource> = this
 
 fun <TSource> IEnumerable<TSource>.forEach(action: (TSource) -> Unit) = forEach { t, i -> action(t) }
 
-fun <TSource> IEnumerable<TSource>.forEach(action: (TSource, Int) -> Unit) {
-    var enumerator: IEnumerator<TSource> = getEnumerator()
-    var index = 0
-    while (enumerator.moveNext()) {
-        action(enumerator.current, index)
-        index++
-    }
-    enumerator.reset()
-}
+fun <TSource> IEnumerable<TSource>.forEach(action: (TSource, Int) -> Unit) = _forEach(action)
 
