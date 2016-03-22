@@ -21,6 +21,8 @@ import java.util.*
 
 fun <TSource> Iterable<TSource>.toEnumerable(): IEnumerable<TSource> = Enumerable<TSource>(this)
 
+fun <TSource> Sequence<TSource>.toEnumerable(): IEnumerable<TSource> = Enumerable<TSource> { iterator() }
+
 fun <TSource> Array<TSource>.toEnumerable(): IEnumerable<TSource> = Enumerable<TSource>({ iterator() })
 
 fun BooleanArray.toEnumerable(): IEnumerable<Boolean> = Enumerable({ iterator() })
