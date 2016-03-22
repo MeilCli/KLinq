@@ -28,16 +28,16 @@ class LinqTest {
         assertArrayEquals((0..2).toEnumerable().toArray(), ar)
     }
 
-    @Test fun range(){
-        assertArrayEquals(Enumerable.range(0,10).toArray(),(0..9).toEnumerable().toArray())
+    @Test fun range() {
+        assertArrayEquals(Enumerable.range(0, 10).toArray(), (0..9).toEnumerable().toArray())
     }
 
-    @Test fun repeat(){
-        assertArrayEquals(Enumerable.repeat(0,3).toArray(),arrayOf(0,0,0))
+    @Test fun repeat() {
+        assertArrayEquals(Enumerable.repeat(0, 3).toArray(), arrayOf(0, 0, 0))
     }
 
-    @Test fun empty(){
-        assertEquals(Enumerable.empty<Int>().count(),0)
+    @Test fun empty() {
+        assertEquals(Enumerable.empty<Int>().count(), 0)
     }
 
     @Test fun elementAt() {
@@ -98,7 +98,7 @@ class LinqTest {
     }
 
     @Test fun sum() {
-        assertEquals(arrayOf(1, 2, 3).toEnumerable().sum(), 6.0,0.0001)
+        assertEquals(arrayOf(1, 2, 3).toEnumerable().sum(), 6.0, 0.0001)
         assertEquals(arrayOf(1.0, 2.0).toEnumerable().sum(), 3.0, 0.0001)
     }
 
@@ -224,12 +224,12 @@ class LinqTest {
                 .zip(arrayOf(1, 2, 3).toEnumerable(), { x, y -> x + y.toString() }).toArray(), arrayOf("a1", "b2"))
     }
 
-    open class a(var name:String){
+    open class a(var name: String) {
         override fun equals(other: Any?): Boolean {
-            if(other==null){
+            if (other == null) {
                 return false
             }
-            if(other is a){
+            if (other is a) {
                 return name.equals(other.name)
             }
             return super.equals(other)
@@ -237,20 +237,20 @@ class LinqTest {
     }
 
     class b(name: String) : a(name) {
-        fun a():String{
+        fun a(): String {
             return name
         }
     }
 
-    @Test fun ofType(){
+    @Test fun ofType() {
         assertArrayEquals(arrayOf(b("a") as a, a("b")).toEnumerable().ofType<a, b>().toArray(), arrayOf(b("a")))
     }
 
-    @Test fun cast(){
+    @Test fun cast() {
         assertArrayEquals(arrayOf(b("a") as a).toEnumerable().cast<a, b>().toArray(), arrayOf(b("a")))
     }
 
-    @Test fun toLookUp(){
+    @Test fun toLookUp() {
         assertArrayEquals(arrayOf("aaa", "aa", "bbb", "cc", "bb").toEnumerable()
                 .toLookup({ x -> x.length })
                 .orderByDescending { x -> x.key }
@@ -258,35 +258,43 @@ class LinqTest {
                 , arrayOf("aaa", "bbb", "aa", "bb", "cc"))
     }
 
-    @Test fun toLookUp_VS_groupBy(){
+    @Test fun toLookUp_VS_groupBy() {
         //groupBy is lazy
-        var ar = arrayOf(-1,-1,-1,-1,-1,-1)
+        var ar = arrayOf(-1, -1, -1, -1, -1, -1)
         var count = 0
         var linq1 = arrayOf("aaa", "aa", "bbb", "cc", "bb").toEnumerable()
-                .select { x-> if(ar[0]==-1)ar[0] = count++;x }
-                .groupBy({ x -> if(ar[1]==-1)ar[1] = count++;x.length })
+                .select { x -> if (ar[0] == -1) ar[0] = count++;x }
+                .groupBy({ x -> if (ar[1] == -1) ar[1] = count++;x.length })
                 .orderByDescending { x -> x.key }
-                .where { x -> true  }
+                .where { x -> true }
                 .selectMany { x -> Enumerable(x.getEnumerator()).orderBy { x -> x } }
         ar[2] = count++
         linq1.toArray()
 
         var linq2 = arrayOf("aaa", "aa", "bbb", "cc", "bb").toEnumerable()
-                .select { x-> if(ar[3]==-1)ar[3] = count++;x }
-                .toLookup({ x -> if(ar[4]==-1)ar[4] = count++;x.length })
+                .select { x -> if (ar[3] == -1) ar[3] = count++;x }
+                .toLookup({ x -> if (ar[4] == -1) ar[4] = count++;x.length })
                 .orderByDescending { x -> x.key }
-                .where { x -> true  }
+                .where { x -> true }
                 .selectMany { x -> Enumerable(x.getEnumerator()).orderBy { x -> x } }
         ar[5] = count++
         linq2.toArray()
 
         // if groupBy is lazy, ar will be [1,2,0,3,4,5]
         // else ar will be [0,1,2,3,4,5]
-        assertArrayEquals(ar,arrayOf(1,2,0,3,4,5))
+        assertArrayEquals(ar, arrayOf(1, 2, 0, 3, 4, 5))
     }
 
     @Test fun sequence() {
         assertArrayEquals(arrayOf(1, 2, 3, 4).asSequence().filter { it % 2 == 0 }.toEnumerable().toArray(), arrayOf(2, 4))
+        assertArrayEquals(arrayOf(1, 2, 3, 4).toEnumerable().where { x -> x % 2 == 0 }.asSequence().toList().toTypedArray(), arrayOf(2, 4))
+        var ar1 = arrayOf(0, 0, 0, 0, 0, 0, 0)
+        var ar2 = arrayOf(0, 0, 0, 1, 2, 2, 2)
+        var i = 0
+        (0..2).toEnumerable().where { x -> ar1[i++] = x;x % 2 == 0 }
+                .asSequence().filter { x -> ar1[i++] = x;x % 2 == 0 }
+                .toEnumerable().select { x -> ar1[i++] = x;x }.toList()
+        assertArrayEquals(ar1, ar2)
     }
 
 }

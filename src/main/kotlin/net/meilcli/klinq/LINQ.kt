@@ -23,6 +23,8 @@ fun <TSource> Iterable<TSource>.toEnumerable(): IEnumerable<TSource> = Enumerabl
 
 fun <TSource> Sequence<TSource>.toEnumerable(): IEnumerable<TSource> = Enumerable<TSource> { iterator() }
 
+fun <TSource> IEnumerable<TSource>.asSequence(): Sequence<TSource> = Sequence { EnumerableIterator(getEnumerator()) }
+
 fun <TSource> Array<TSource>.toEnumerable(): IEnumerable<TSource> = Enumerable<TSource> { iterator() }
 
 fun BooleanArray.toEnumerable(): IEnumerable<Boolean> = Enumerable { iterator() }
