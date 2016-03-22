@@ -285,4 +285,8 @@ class LinqTest {
         assertArrayEquals(ar,arrayOf(1,2,0,3,4,5))
     }
 
+    @Test fun sequence() {
+        assertArrayEquals(arrayOf(1, 2, 3, 4).asSequence().filter { it % 2 == 0 }.toEnumerable().toArray(), arrayOf(2, 4))
+    }
+
 }
