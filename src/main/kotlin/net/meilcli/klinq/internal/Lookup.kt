@@ -3,7 +3,7 @@ package net.meilcli.klinq.internal
 import net.meilcli.klinq.*
 import java.util.*
 
-class Lookup<TSource, TKey, TElement> : ILookup<TKey, TElement> {
+internal class Lookup<TSource, TKey, TElement> : ILookup<TKey, TElement> {
 
     private val enumerator: IEnumerator<IGrouping<TKey, TElement>>
     private var list = ArrayList<IGrouping<TKey, TElement>>()

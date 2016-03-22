@@ -6,7 +6,7 @@ import net.meilcli.klinq.IOrderedEnumerable
 import net.meilcli.klinq.toList
 import java.util.*
 
-class OrderedEnumerable<T, TKey> : IOrderedEnumerable<T> {
+internal class OrderedEnumerable<T, TKey> : IOrderedEnumerable<T> {
 
     private var enumComparator: Comparator<T>
     private val enumerator: IEnumerator<T>
