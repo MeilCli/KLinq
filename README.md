@@ -3,7 +3,7 @@ LINQ for Kotlin
 
 KLinq implement alike C# LINQ  
 and Deferred(Lazy) Execution  
-そのうちドキュメントは書く(ちゃんと書くとは言っていない)
+[日本語解説](http://meilcli.net/product/klinq.html)
 
 #### The difference 
 - this must use [List,Array,Iterable...].toEnumeable()
