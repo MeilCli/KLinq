@@ -237,7 +237,7 @@ fun <TOuter, TInner, TKey, TResult> IEnumerable<TOuter>.groupJoin(
 fun <TSource> IEnumerable<TSource>.concat(second: IEnumerable<TSource>): IEnumerable<TSource>
         = Enumerable(ConcatEnumerator(getEnumerator(), second.getEnumerator()))
 
-inline fun <reified TSource> IEnumerable<TSource>.defaultIfEmpty(): IEnumerable<TSource?> = _defaultIfEmpty()
+inline fun <reified TSource> IEnumerable<TSource>.defaultIfEmpty(): IEnumerable<TSource> = _defaultIfEmpty()
 
 inline fun <reified TSource> IEnumerable<TSource>.defaultIfEmpty(defaultValue: TSource): IEnumerable<TSource> = _defaultIfEmpty(defaultValue)
 

@@ -220,14 +220,14 @@ internal fun <TSource> IEnumerable<TSource>._sequenceEqual(second: IEnumerable<T
     return true
 }
 
-inline fun <reified TSource> IEnumerable<TSource>._defaultIfEmpty(): IEnumerable<TSource?> {
+inline fun <reified TSource> IEnumerable<TSource>._defaultIfEmpty(): IEnumerable<TSource> {
     if (getEnumerator().moveNext()) {
         getEnumerator().reset()
         // TSource→TSource?
         return this.select { x -> x }
     } else {
         getEnumerator().reset()
-        return arrayOfNulls<TSource>(1).toEnumerable()
+        return emptyArray<TSource>().toEnumerable()
     }
 }
 
