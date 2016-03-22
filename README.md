@@ -20,7 +20,7 @@ and Deferred(Lazy) Execution
 
 #### gradle
 	dependencies {
-		compile 'net.meilcli:klinq:1.4'
+		compile 'net.meilcli:klinq:1.5'
 	}
 
 #### Usage
