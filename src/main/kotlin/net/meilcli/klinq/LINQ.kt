@@ -23,23 +23,23 @@ fun <TSource> Iterable<TSource>.toEnumerable(): IEnumerable<TSource> = Enumerabl
 
 fun <TSource> Sequence<TSource>.toEnumerable(): IEnumerable<TSource> = Enumerable<TSource> { iterator() }
 
-fun <TSource> Array<TSource>.toEnumerable(): IEnumerable<TSource> = Enumerable<TSource>({ iterator() })
+fun <TSource> Array<TSource>.toEnumerable(): IEnumerable<TSource> = Enumerable<TSource> { iterator() }
 
-fun BooleanArray.toEnumerable(): IEnumerable<Boolean> = Enumerable({ iterator() })
+fun BooleanArray.toEnumerable(): IEnumerable<Boolean> = Enumerable { iterator() }
 
-fun CharArray.toEnumerable(): IEnumerable<Char> = Enumerable({ iterator() })
+fun CharArray.toEnumerable(): IEnumerable<Char> = Enumerable { iterator() }
 
-fun ByteArray.toEnumerable(): IEnumerable<Byte> = Enumerable({ iterator() })
+fun ByteArray.toEnumerable(): IEnumerable<Byte> = Enumerable { iterator() }
 
-fun ShortArray.toEnumerable(): IEnumerable<Short> = Enumerable({ iterator() })
+fun ShortArray.toEnumerable(): IEnumerable<Short> = Enumerable { iterator() }
 
-fun IntArray.toEnumerable(): IEnumerable<Int> = Enumerable({ iterator() })
+fun IntArray.toEnumerable(): IEnumerable<Int> = Enumerable { iterator() }
 
-fun LongArray.toEnumerable(): IEnumerable<Long> = Enumerable({ iterator() })
+fun LongArray.toEnumerable(): IEnumerable<Long> = Enumerable { iterator() }
 
-fun FloatArray.toEnumerable(): IEnumerable<Float> = Enumerable({ iterator() })
+fun FloatArray.toEnumerable(): IEnumerable<Float> = Enumerable { iterator() }
 
-fun DoubleArray.toEnumerable(): IEnumerable<Double> = Enumerable({ iterator() })
+fun DoubleArray.toEnumerable(): IEnumerable<Double> = Enumerable { iterator() }
 
 fun <TSource> IEnumerable<TSource>.elementAt(index: Int): TSource = _elementAt(index)
 
